@@ -1,15 +1,87 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Division {
+  id         String      @id @default(uuid())
+  name       String
+  bn_name    String
+  url        String
+  districts  District[]
+  complaints Complaint[]
+}
+
+model District {
+  id         String      @id @default(uuid())
+  division   Division    @relation(fields: [divisionId], references: [id])
+  divisionId String
+  name       String
+  bn_name    String
+  lat        String
+  lon        String
+  url        String
+  upazilas   Upazila[]
+  complaints Complaint[]
+}
+
+model Upazila {
+  id         String      @id @default(uuid())
+  district   District    @relation(fields: [districtId], references: [id])
+  districtId String
+  name       String
+  bn_name    String
+  url        String
+  unions     Union[]
+  complaints Complaint[]
+}
+
+model Union {
+  id         String      @id @default(uuid())
+  upazila    Upazila     @relation(fields: [upazilaId], references: [id])
+  upazilaId  String
+  name       String
+  bn_name    String
+  url        String
+  complaints Complaint[]
+}
+
+model Category {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  description String
+  complaints Complaint[]
+}
+
+enum ComplaintStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+model Complaint {
+  id          String          @id @default(uuid())
+  title       String
+  description String
+  images      String[]
+  notes       String?
+  status      ComplaintStatus @default(PENDING)
+  createdAt   DateTime        @default(now())
+
+  categoryId  String
+  divisionId  String
+  districtId  String
+  upazilaId   String
+  unionId     String
+
+  category    Category @relation(fields: [categoryId], references: [id])
+  division    Division @relation(fields: [divisionId], references: [id])
+  district    District @relation(fields: [districtId], references: [id])
+  upazila     Upazila  @relation(fields: [upazilaId], references: [id])
+  union       Union    @relation(fields: [unionId], references: [id])
 }
