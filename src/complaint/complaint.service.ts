@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { SupabaseService } from 'src/shared/supabase.service';
+import { SUPABASE_BUCKET_FOLDER } from 'src/enums';
 
 @Injectable()
 export class ComplaintService {
@@ -28,7 +29,10 @@ export class ComplaintService {
 
     for (const file of images) {
       const base64: string = file.buffer.toString('base64');
-      const url = await this.supabaseService.uploadImage(base64);
+      const url = await this.supabaseService.uploadImage(
+        base64,
+        SUPABASE_BUCKET_FOLDER.COMPLAINTS,
+      );
       if (url) {
         imageUrls.push(url);
       }
