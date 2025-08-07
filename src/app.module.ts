@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
 // import { PostModule } from './post/post.module';
 import { CategoryModule } from './category/category.module';
+import { ComplaintModule } from './complaint/complaint.module';
+import { EnvModule } from './env/env.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     CategoryModule,
+    ComplaintModule,
+    EnvModule,
+    SharedModule,
     // PostModule,
   ],
   controllers: [AppController],
