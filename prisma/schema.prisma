@@ -64,6 +64,23 @@ enum ComplaintStatus {
   REJECTED
 }
 
+model User {
+  id          String       @id @default(uuid())
+  authId      String       @unique
+  email       String       @unique
+  name        String?
+  role        Role         @default(citizen)
+  divisionId  Int?
+  districtId  Int?
+  upazilaId   Int?
+  unionId     Int?
+
+  complaints  Complaint[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
 model Complaint {
   id          String          @id @default(uuid())
   title       String
@@ -78,10 +95,19 @@ model Complaint {
   districtId  String
   upazilaId   String
   unionId     String
+  userId      String
+
+  user        User     @relation(fields: [userId], references: [id])
 
   category    Category @relation(fields: [categoryId], references: [id])
   division    Division @relation(fields: [divisionId], references: [id])
   district    District @relation(fields: [districtId], references: [id])
   upazila     Upazila  @relation(fields: [upazilaId], references: [id])
   union       Union    @relation(fields: [unionId], references: [id])
+}
+
+enum Role {
+  citizen
+  admin
+  super_admin
 }
